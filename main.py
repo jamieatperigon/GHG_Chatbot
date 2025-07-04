@@ -86,19 +86,20 @@ def handle_message(input: MessageInput):
     reply = response["choices"][0]["message"]["content"]
     return {"reply": reply}
 
-# Optional: if GPT extracts new structured facts, update profile
 def maybe_enrich_profile(message, user_id):
-    if "my home is at" in message or "I live in" in message:
-        # crude postcode grabber
-        import re
-        match = re.search(r"(EH\d+\s?\d?[A-Z]{2}?)", message, re.IGNORECASE)
-        if match:
-            postcode = match.group(1).strip()
-            existing = get_user_profile(user_id) or {}
-            existing["home_postcode"] = postcode
-            save_user_profile(user_id, existing)
+    import re
+    profile = get_user_profile(user_id) or {}
 
-    # More logic could go here, e.g. checking for "we use oil heating"
+    if "heating" in message.lower():
+        if "oil" in message.lower():
+            profile["heating_type"] = "Oil"
+        elif "gas" in message.lower():
+            profile["heating_type"] = "Gas"
 
-# Call this inside /message
-maybe_enrich_profile(input.message, input.user_id)
+    postcode_match = re.search(r"(EH\d+\s?\d?[A-Z]{2}?)", message, re.IGNORECASE)
+    if postcode_match:
+        profile["home_postcode"] = postcode_match.group(1).strip()
+
+    if profile:
+        save_user_profile(user_id, profile)
+
