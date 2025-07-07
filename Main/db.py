@@ -31,8 +31,7 @@ def save_user_profile(user_id, home_postcode, office_postcode, created_at):
         VALUES (?, ?, ?, ?)
         ON CONFLICT(user_id) DO UPDATE SET
             home_postcode=excluded.home_postcode,
-            office_postcode=excluded.office_postcode,
-            created_at=excluded.created_at
+            office_postcode=excluded.office_postcode
         ''',
         (user_id, home_postcode, office_postcode, created_at)
     )
@@ -60,6 +59,33 @@ def get_user_vehicles(user_id: str) -> List[dict]:
     rows = cursor.fetchall()
     conn.close()
     return [dict(zip(["vehicle_id", "name", "fuel_type", "factor_id"], row)) for row in rows]
+
+# --------------------------
+# VEHICLE FACTOR SAFETY MATCH
+# --------------------------
+
+def find_best_vehicle_factor(fuel_type: str, engine_size: Optional[str] = None) -> List[dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    query = '''
+        SELECT factor_id, level_1, level_2, level_3, level_4, unit, conversion_factor
+        FROM conversion_factors
+        WHERE level_1 LIKE '%passenger%'
+          AND level_2 LIKE ?
+    '''
+    params = [f'%{fuel_type.lower()}%']
+    if engine_size:
+        query += ' AND level_3 LIKE ?'
+        params.append(f'%{engine_size.lower()}%')
+    
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    conn.close()
+    
+    return [dict(zip([
+        "factor_id", "level_1", "level_2", "level_3", "level_4", "unit", "conversion_factor"
+    ], row)) for row in results]
 
 # --------------------------
 # USER ENERGY SOURCES
