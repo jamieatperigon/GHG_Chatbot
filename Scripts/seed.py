@@ -1,4 +1,4 @@
-from db import save_user_profile, get_user_profile
+from GHG_bot.db import save_user_profile, get_user_profile
 import datetime
 
 userID="jamie@perigonpartners.co.uk"

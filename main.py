@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from db import init_db, get_user_profile, save_user_profile
+from GHG_bot.db import init_db, get_user_profile, save_user_profile
 
 import os
 import openai
