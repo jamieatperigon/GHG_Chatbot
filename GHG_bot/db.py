@@ -1,11 +1,14 @@
 import sqlite3
-from typing import Optional, List, Dict
+import os
+from typing import Optional, List, Dict 
 
-# Unified database file name
-DB_PATH = "GHG_chatbot_data.db"
+# Resolve correct path to the real DB file
+DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Data', 'GHG_chatbot_data.db'))
 
 def get_connection():
     return sqlite3.connect(DB_PATH)
+
+
 
 # --------------------------
 # USER PROFILES
