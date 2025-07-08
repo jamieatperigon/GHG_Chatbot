@@ -1,12 +1,15 @@
+from typing import Optional, List, Dict
+
 import sqlite3
 import os
-from typing import Optional, List, Dict 
+import sqlite3
 
-# Resolve correct path to the real DB file
+# Always resolves to: /Users/jamiethomson/Desktop/GHGChatbot/Data/GHG_chatbot_data.db
 DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Data', 'GHG_chatbot_data.db'))
 
 def get_connection():
     return sqlite3.connect(DB_PATH)
+
 
 
 
